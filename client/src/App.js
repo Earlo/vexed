@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
 import './App.css'
+import {connect} from 'react-redux'
+import PropTypes from 'prop-types'
 
-import {getCountries, getFlag} from './ducks/api-requests'
+import {getCountries, isLoading} from './ducks/api-requests'
 import {getCountriesCount} from './ducks/rounds'
 import {RadioPads} from './components/Radio-pads'
 // this is a little helper you can use if you like, or erase and make your own
@@ -33,38 +35,36 @@ const renderCurrentMessage = (  // eslint-disable-line no-unused-vars
 }
 
 class App extends Component {
-  state = {countries:{},
-  flags:{},
-  countryOptions:false,
-  flag:{},
-  correct:-1,
-  resultMessage:"Select country",
-  roundOver:false}
+  state = {
+    countries: {},
+    flags: {},
+    countryOptions: false,
+    flag: {},
+    correct: -1,
+    resultMessage: `Select country`,
+    roundOver: false
+  }
 
   handleClick = (clickValue) => {
     const {correct, countryOptions} = this.state
-    this.setState({resultMessage:countryOptions[correct].code == clickValue?"correct":"wrong"})
-    this.setState({roundOver:true})
+    this.setState({resultMessage: countryOptions[correct].code === clickValue ? `correc` : `wrong`})
+    this.setState({roundOver: true})
   }
 
-  componentDidMount(){
-    getCountries().then(response=>{
-      this.setState({countries:response.data})
-
-      const selectedCountries = getCountriesCount(response.data,3)
-      this.setState({countryOptions:selectedCountries})
-      this.setState({correct:0})
+  componentDidMount() {
+    this.props.getCountries()
       /*
       const countryId = selectedCountries[0].code
       getFlag(countryId).then(flagResponse=>{
         this.setState({flag:flagResponse})
       })
       */
-    })
+    
   }
 
   render() {
-    const {resultMessage, countryOptions, flag, roundOver} = this.state
+    console.log(this.props.loading)
+    const {resultMessage, countryOptions, roundOver} = this.state
 
     return (
       <div className='App'>
@@ -80,22 +80,30 @@ class App extends Component {
         <nav><h4 style={{color: '#fff'}}>Cool nav bar here</h4></nav>
 
         <main>
+          <p> {this.props.loading ? 'loading' : 'not loading'}
+          </p>
           {resultMessage}
-          {countryOptions&&
-          <img src={`flags/${Array.from(countryOptions)[0].code.toLowerCase()}.png`}/>
+          {countryOptions &&
+          <img src={`flags/${Array.from(countryOptions)[0].code.toLowerCase()}.png`} />
           }
           <RadioPads
-          options={Array.from(countryOptions).map((country)=>{return country.choice})}
+          options={Array.from(countryOptions).map(country => country.choice)}
           handleSelection={this.handleClick}
           disabled={roundOver}
-          >
-          </RadioPads>
+          />
         </main>
       </div>
     )
   }
 }
 
-App.propTypes = {}
+App.propTypes = {
+  loading: PropTypes.bool
+}
 
-export default App
+const mapStateToProps = state => ({
+  loading: isLoading(state)
+})
+export default connect(mapStateToProps, {
+  getCountries
+})(App)

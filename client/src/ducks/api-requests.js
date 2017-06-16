@@ -1,31 +1,53 @@
 import axios from 'axios'
-
+import {getOr} from '../helpers'
+import {call, put, take} from 'redux-saga/effects'
 // -----------------------
 //       actions
 // -----------------------
-export function getCountries(){
-  return axios('api/countries')
-}
-
-export function getFlag(countryId){
-  return axios(`flags/${countryId.toLowerCase()}.png`)
-}
+const FETCH = 'api/FETCH'
+const COMPLETE = 'api/COMPLETE'
 
 // -----------------------
 //   action creators
 // -----------------------
-
+export const getCountries = () => ({type: FETCH, resource: 'countries'})
 // -----------------------
 //        reducer
 // -----------------------
-
+export default function reducer(state = {},  action = {}) {
+  switch (action.type) {
+    case FETCH:
+      return {
+        ...state,
+        [action.resource]: {status: 'in_progress'}
+      }
+    case COMPLETE:
+      return {
+        ...state,
+        [action.resource]: {status: 'completed'}
+      }
+    default:
+      return state
+  }
+}
 // -----------------------
 //        selectors
 // -----------------------
-
+export const isLoading = state => getOr(`api.countries.status`, false, 'in_progress') === 'in_progress'
 // -----------------------
 //        sagas
 // -----------------------
+
+export function* request(){
+  yield take(FETCH)
+  const {data} = yield call(asd)
+  yield put({type: COMPLETE, resource: 'countries', data})
+  return data
+}
+
+export function asd(){
+  return axios('api/countries')
+}
 
 // -----------------------
 //      side effects
