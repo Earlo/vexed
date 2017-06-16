@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {PropTypes} from 'prop-types'
 import './Radio-pads.css'
 
-class RadioPads extends Component {
+export class RadioPads extends Component {
   state = {selected: ''}
 
   handleSelection = e => {
@@ -54,4 +54,3 @@ RadioPads.propTypes = {
   handleSelection: PropTypes.func.isRequired
 }
 
-export default RadioPads

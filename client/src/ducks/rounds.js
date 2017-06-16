@@ -1,7 +1,14 @@
 // -----------------------
 //       actions
 // -----------------------
-
+export function getCountriesCount(countries, cCount){
+  var cSet = new Set()
+  while (cSet.size < cCount){
+    cSet.add(getRandomCountry(countries))
+  }
+  console.log(cSet.size)
+  return Array.from(cSet)
+}
 // -----------------------
 //   action creators
 // -----------------------

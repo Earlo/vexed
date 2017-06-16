@@ -3,6 +3,13 @@ import axios from 'axios'
 // -----------------------
 //       actions
 // -----------------------
+export function getCountries(){
+  return axios('api/countries')
+}
+
+export function getFlag(countryId){
+  return axios(`flags/${countryId.toLowerCase()}.png`)
+}
 
 // -----------------------
 //   action creators
